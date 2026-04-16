@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>MBTI人格探索</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--p:#C5B3E6;--pd:#A99BD4;--pl:#DDD4F0;--b:#B8D4E3;--bd:#96BDD0;--cr:#FAF8F5;--dk:#2D3436;--g:#B2BEC3;--gl:#DFE6E9;--o:#F0A868;--od:#E09550;--w:#FFF;--sh:0 4px 20px rgba(0,0,0,.08);--shl:0 8px 32px rgba(0,0,0,.12);--r:16px;--rs:10px;--rx:8px;--tr:all .3s cubic-bezier(.4,0,.2,1)}
+html,body{height:100%;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#E8E4DF;color:var(--dk);overflow:hidden;touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+input,textarea{user-select:auto;-webkit-user-select:auto}
+#app{max-width:430px;margin:0 auto;height:100%;position:relative;z-index:1;background:var(--cr);overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.1)}
+.pg{position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;padding-bottom:80px;opacity:0;transform:translateX(30px);transition:opacity .35s,transform .35s;pointer-events:none;-webkit-overflow-scrolling:touch;z-index:0}
+.pg.on{opacity:1;transform:translateX(0);pointer-events:auto;z-index:1}
+.pg.so{opacity:0;transform:translateX(-30px)}
+.pg.nb{padding-bottom:0}
+.bn{position:absolute;bottom:0;left:0;right:0;height:64px;background:var(--w);display:flex;align-items:center;justify-content:space-around;z-index:100;box-shadow:0 -2px 20px rgba(0,0,0,.06);border-top:1px solid var(--gl)}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;cursor:pointer;transition:var(--tr);opacity:.5;font-size:10px;color:var(--dk);position:relative}
+.ni.on{opacity:1;color:var(--pd)}
+.ni .ic{font-size:22px;line-height:1}
+.ni .bdg{position:absolute;top:0;right:4px;background:#FF6B6B;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center}
+.sec{padding:0 20px;margin-bottom:20px}
+.stl{font-size:16px;font-weight:700;margin-bottom:12px}
+.cd{background:var(--w);border-radius:var(--r);padding:16px;box-shadow:var(--sh);transition:var(--tr)}
+.bt{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 24px;border-radius:var(--rs);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:var(--tr);color:#fff}
+.bt:active{transform:scale(.95)}
+.bp{background:linear-gradient(135deg,var(--p),var(--pd))}
+.bb{background:linear-gradient(135deg,var(--b),var(--bd))}
+.bo{background:linear-gradient(135deg,var(--o),var(--od))}
+.bou{background:transparent;border:2px solid var(--p);color:var(--pd)}
+.bf{width:100%}
+.bg{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.bgp{background:var(--pl);color:#7C5CBF}
+.tg{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;background:var(--gl);color:var(--dk);margin:2px 4px 2px 0}
+.av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+.pb{height:4px;background:var(--gl);border-radius:2px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--p),var(--b));border-radius:2px;transition:width .4s}
+.tc{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:380px;width:90%}
+.tt{background:rgba(45,52,54,.9);color:#fff;padding:12px 20px;border-radius:var(--rs);font-size:13px;animation:ti .3s ease,to .3s ease 2.2s forwards;text-align:center;backdrop-filter:blur(10px)}
+@keyframes ti{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes to{from{opacity:1}to{opacity:0;transform:translateY(-20px)}}
+.mo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.mo.sh{opacity:1;pointer-events:auto}
+.mc{background:var(--w);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:430px;max-height:80vh;overflow-y:auto;padding:24px;transform:translateY(100%);transition:transform .3s}
+.mo.sh .mc{transform:translateY(0)}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mt{font-size:18px;font-weight:700}
+.mx{width:44px;height:44px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;border:none}
+.sp{width:40px;height:40px;border:3px solid var(--gl);border-top-color:var(--p);border-radius:50%;animation:rn .8s linear infinite;margin:20px auto}
+@keyframes rn{to{transform:rotate(360deg)}}
+@keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.an{animation:su .4s ease both}.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}.d4{animation-delay:.4s}
+.pg::-webkit-scrollbar{width:0;display:none}
+.hh{padding:24px 20px 16px;background:linear-gradient(135deg,var(--pl),#E8F0FE)}
+.hu{display:flex;align-items:center;gap:14px}.hi{flex:1}.hn{font-size:18px;font-weight:700}.ht{font-size:13px;color:var(--g);margin-top:2px}
+.hw{background:var(--w);border-radius:var(--r);padding:10px 14px;margin-top:12px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--pd);box-shadow:var(--sh)}
+.hg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hgc{background:var(--w);border-radius:var(--r);padding:18px;box-shadow:var(--sh);cursor:pointer;transition:var(--tr);position:relative;overflow:hidden}
+.hgc:active{transform:scale(.96)}
+.hgc .ci{font-size:28px;margin-bottom:8px}.hgc .ct{font-size:14px;font-weight:700}.hgc .cd{font-size:11px;color:var(--g);margin-top:4px}
+.hgc:nth-child(1){background:linear-gradient(135deg,#F0E6FF,#E8F4FD)}
+.hgc:nth-child(2){background:linear-gradient(135deg,#FFE8E8,#FFF0E8)}
+.hgc:nth-child(3){background:linear-gradient(135deg,#E8F8E8,#E8F0FF)}
+.hgc:nth-child(4){background:linear-gradient(135deg,#FFF8E8,#F0E8FF)}
+.hgc .ur{position:absolute;top:10px;right:10px;background:#FF6B6B;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px}
+.df{background:linear-gradient(135deg,var(--p),var(--b));border-radius:var(--r);padding:18px;color:#fff;position:relative;overflow:hidden}
+.df .ft{font-size:14px;font-weight:700;margin-bottom:6px}.df .fx{font-size:12px;line-height:1.6;opacity:.9}
+.cm2{display:flex;gap:10px;margin-top:12px}
+.mb2{flex:1;padding:12px 8px;border-radius:var(--rs);border:2px solid var(--gl);background:var(--w);cursor:pointer;text-align:center;transition:var(--tr);font-size:12px}
+.mb2:active,.mb2.sl{border-color:var(--p);background:var(--pl)}
+.mb2 .mi{font-size:24px;display:block;margin-bottom:4px}
+.tmm{padding:30px 20px;text-align:center}.tmm h2{font-size:22px;font-weight:700;margin-bottom:8px}.tmm p{font-size:13px;color:var(--g);margin-bottom:24px}
+.tmb{width:100%;padding:20px;border-radius:var(--r);border:none;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:14px;background:var(--w);box-shadow:var(--sh);transition:var(--tr);text-align:left}
+.tmb:active{transform:scale(.98)}
+.tmb .mi{font-size:32px;width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tmb .mf h3{font-size:15px;font-weight:700}.tmb .mf p{font-size:12px;color:var(--g);margin-top:2px}
+.tqp{display:none;flex-direction:column;height:calc(100% - 64px)}.tqp.on{display:flex}
+.tpb2{position:absolute;top:16px;right:20px;background:var(--w);border:none;width:44px;height:44px;border-radius:50%;box-shadow:var(--sh);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:10}
+.tob{padding:18px;border-radius:var(--r);border:2px solid var(--gl);background:var(--w);cursor:pointer;transition:var(--tr);font-size:14px;line-height:1.5}
+.tob:active{transform:scale(.97)}.tob.sl{border-color:var(--p);background:var(--pl)}
+.rp2{text-align:center;padding-top:40px}
+.rr2{font-size:56px;font-weight:900;letter-spacing:8px;color:var(--pd);margin:20px 0;min-height:70px}
+.rr2 .rl{display:inline-block;opacity:0;transform:translateY(20px);animation:lr .5s ease forwards}
+@keyframes lr{to{opacity:1;transform:translateY(0)}}
+.rtn{font-size:20px;font-weight:700;margin-bottom:4px}.rtd{font-size:13px;color:var(--g);margin-bottom:20px}
+.rkw{display:flex;justify-content:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.rcw{display:flex;justify-content:center;margin:20px 0}
+.rtabs{display:flex;background:var(--gl);border-radius:var(--rs);padding:3px;margin:0 20px}
+.rtab{flex:1;padding:10px;text-align:center;border-radius:var(--rx);cursor:pointer;font-size:13px;font-weight:600;transition:var(--tr);color:var(--g)}
+.rtab.on{background:var(--w);color:var(--dk);box-shadow:var(--sh)}
+.rtc{padding:16px 20px;display:none}.rtc.on{display:block}
+.ctpls{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
+.ctpl{width:60px;height:80px;border-radius:var(--rs);cursor:pointer;border:3px solid transparent;transition:var(--tr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600}
+.ctpl.on{border-color:var(--dk);transform:scale(1.05)}
+.cpv{margin:0 20px;border-radius:var(--r);overflow:hidden;min-height:280px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;color:#fff}
+.cpv .ca{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin-bottom:12px}
+.cpv .ct2{font-size:28px;font-weight:900;letter-spacing:4px;margin-bottom:8px}
+.cpv .ck{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.cpv .ck span{background:rgba(255,255,255,.25);padding:4px 10px;border-radius:20px;font-size:11px}
+.cpv .ctt{font-size:13px;font-weight:700;margin-bottom:6px;opacity:.9}
+.cpv .ctx{font-size:12px;opacity:.8;line-height:1.6;text-align:center}
+.ced{padding:20px}
+.ced label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;margin-top:12px}
+.ced input,.ced textarea{width:100%;padding:10px 14px;border:2px solid var(--gl);border-radius:var(--rx);font-size:13px;font-family:inherit;transition:var(--tr);resize:none}
+.ced input:focus,.ced textarea:focus{outline:none;border-color:var(--p)}
+.sf2{display:flex;gap:0;padding:12px 20px;background:var(--w)}
+.sfi{padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;transition:var(--tr);color:var(--g);font-weight:600;white-space:nowrap}
+.sfi.on{background:var(--p);color:#fff}
+.sps{padding:12px 20px}
+.sp2{background:var(--w);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.sph{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.spa{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.spun{flex:1}.spnm{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.spnm .an2{font-size:10px;background:var(--gl);padding:1px 6px;border-radius:8px}
+.sptm{font-size:11px;color:var(--g)}
+.spc{font-size:14px;line-height:1.7;margin-bottom:10px}
+.spac{display:flex;gap:20px}
+.spa3{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--g);cursor:pointer}
+.spa3.lk{color:#FF6B6B}
+.sfab{position:absolute;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--b));color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:var(--shl);transition:var(--tr);z-index:50}
+.sfab:active{transform:scale(.9)}
+.tsw{width:44px;height:44px;border-radius:22px;background:var(--gl);position:relative;cursor:pointer;transition:var(--tr)}
+.tsw.on{background:var(--p)}
+.tsw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:12px;left:2px;transition:var(--tr);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.tsw.on::after{left:22px}
+.ptg{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.pt2{padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--gl);transition:var(--tr)}
+.pt2.sl{background:var(--pl);border-color:var(--p);color:var(--pd)}
+.tlb{width:40px;height:40px;border-radius:var(--rx);border:2px solid var(--gl);background:var(--w);cursor:pointer;font-size:16px;font-weight:700;transition:var(--tr)}
+.tlb.sl{border-color:var(--p);background:var(--pl);color:var(--pd)}
+.mtd{font-size:32px;font-weight:900;color:var(--pd);letter-spacing:6px;margin:16px 0;min-height:44px}
+.sb2{padding:10px 20px;border-radius:20px;border:2px solid var(--gl);background:var(--w);cursor:pointer;font-size:13px;transition:var(--tr)}
+.sb2.sl{border-color:var(--o);background:#FFF3E0;color:var(--od)}
+.mr2{display:none;padding:20px}.mr2.sh{display:block}
+.msc{width:140px;height:140px;border-radius:50%;margin:0 auto 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:conic-gradient(var(--p) var(--sd,0deg),var(--gl) 0deg);position:relative}
+.msc::before{content:'';position:absolute;width:110px;height:110px;border-radius:50%;background:var(--cr)}
+.msn{position:relative;font-size:36px;font-weight:900;color:var(--pd)}
+.msl{position:relative;font-size:11px;color:var(--g)}
+.md2{background:var(--w);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.md2 h4{font-size:14px;font-weight:700;margin-bottom:8px}.md2 p{font-size:13px;line-height:1.6;color:#636E72}
+.thp2{background:linear-gradient(180deg,#0C1445,#1A237E,#283593);min-height:100%;color:#fff;position:relative}
+.thp2::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 40px 70px,rgba(255,255,255,.8),transparent),radial-gradient(1px 1px at 90px 40px,#fff,transparent),radial-gradient(1px 1px at 130px 80px,rgba(255,255,255,.6),transparent),radial-gradient(2px 2px at 160px 30px,#fff,transparent),radial-gradient(1px 1px at 200px 60px,rgba(255,255,255,.7),transparent),radial-gradient(2px 2px at 250px 20px,#fff,transparent),radial-gradient(1px 1px at 300px 50px,rgba(255,255,255,.5),transparent),radial-gradient(2px 2px at 350px 90px,#fff,transparent),radial-gradient(1px 1px at 380px 40px,rgba(255,255,255,.6),transparent);background-size:400px 100px;animation:tw 4s ease-in-out infinite alternate;pointer-events:none}
+@keyframes tw{0%{opacity:.6}100%{opacity:1}}
+.thpo{background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.hb2{display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:#fff;cursor:pointer;font-size:12px;transition:var(--tr)}
+.hb2:active{background:rgba(255,255,255,.15)}.hb2.hg{background:rgba(255,107,107,.2);border-color:rgba(255,107,107,.4)}
+.ha2{position:fixed;pointer-events:none;z-index:9999;font-size:24px;animation:hfl 1.5s ease forwards}
+@keyframes hfl{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
+.ph2{background:linear-gradient(135deg,var(--pl),#E8F0FE);padding:30px 20px 24px;text-align:center}
+.pav2{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;box-shadow:0 4px 16px rgba(197,179,230,.4)}
+.pst2{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px}
+.psi2{background:var(--w);border-radius:var(--rs);padding:14px 8px;text-align:center;box-shadow:var(--sh)}
+.psi2 .sn2{font-size:22px;font-weight:900;color:var(--pd)}.psi2 .sl2{font-size:11px;color:var(--g);margin-top:2px}
+.pmi2{display:flex;align-items:center;gap:12px;padding:16px;background:var(--w);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:var(--tr);box-shadow:var(--sh)}
+.pmi2:active{transform:scale(.98)}.pmi2 .mic2{font-size:22px;width:36px;text-align:center}.pmi2 .mtx2{flex:1;font-size:14px;font-weight:600}.pmi2 .mar2{color:var(--g);font-size:14px}
+.ag2{display:flex;gap:10px;flex-wrap:wrap}
+.ab2{width:60px;text-align:center}
+.ab2 .bi2{width:48px;height:48px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--gl);transition:var(--tr)}
+.ab2.ul .bi2{background:linear-gradient(135deg,var(--pl),#E8F0FE);box-shadow:0 2px 8px rgba(197,179,230,.3)}
+.ab2 .bn2{font-size:10px;color:var(--g)}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="tc" id="TC"></div>
+<div class="mo" id="MO" onclick="if(event.target===this)cM()"><div class="mc" id="MC"></div></div>
+
+<div class="pg on" id="page-home">
+<div class="hh"><div class="hu"><div class="av" id="hAv" style="background:var(--p)">?</div><div class="hi"><div class="hn" id="hNm">点击开始探索</div><div class="ht" id="hTy">尚未测试</div><div id="hTg"></div></div></div><div class="hw" id="hWv" style="display:none"><span>&#x1F52E;</span><span id="hWt"></span></div></div>
+<div class="sec"><div class="hg">
+<div class="hgc an d1" onclick="toast('每日适配清单功能开发中')"><div class="ci">&#x1F4CB;</div><div class="ct">每日适配清单</div><div class="cd">饮食/穿搭/休闲</div></div>
+<div class="hgc an d2" onclick="nav('match')"><div class="ci">&#x1F495;</div><div class="ct">人格匹配</div><div class="cd">看看谁最懂你</div></div>
+<div class="hgc an d3" onclick="nav('square')"><div class="ci">&#x1F4AC;</div><div class="ct">同频广场</div><div class="cd">找到同频灵魂</div><span class="ur" id="sqUn" style="display:none">3</span></div>
+<div class="hgc an d4" onclick="nav('treehole')"><div class="ci">&#x1F333;</div><div class="ct">人格树洞</div><div class="cd">安全的倾诉空间</div></div>
+</div></div>
+<div class="sec"><div class="df an d2"><div class="ft">每日人格小知识</div><div class="fx" id="dFact">加载中...</div></div></div>
+<div class="sec"><div class="stl">今日心情打卡</div><div class="cm2">
+<div class="mb2" data-mood="energetic" onclick="selM(this)"><span class="mi">&#x26A1;</span>充电满满</div>
+<div class="mb2" data-mood="calm" onclick="selM(this)"><span class="mi">&#x2601;</span>平静日常</div>
+<div class="mb2" data-mood="alone" onclick="selM(this)"><span class="mi">&#x1F319;</span>需要独处</div>
+<div class="mb2" data-mood="chat" onclick="selM(this)"><span class="mi">&#x1F4AC;</span>想聊聊</div>
+</div><button class="bt bp bf" style="margin-top:12px" onclick="doCK()">打卡签到</button></div>
+</div>
+
+<div class="pg" id="page-test">
+<div class="tmm" id="tModes"><h2>探索你的人格密码</h2><p>通过有趣的场景题，发现真实的自己</p>
+<button class="tmb" onclick="startT('deep')"><div class="mi" style="background:linear-gradient(135deg,var(--pl),#E8D5F5)">&#x1F50D;</div><div class="mf"><h3>深度测试</h3><p>24道精选场景题 / 约10分钟 / 更精准</p></div></button>
+<button class="tmb" onclick="startT('quick')"><div class="mi" style="background:linear-gradient(135deg,#E8F4FD,#D6EAF8)">&#x26A1;</div><div class="mf"><h3>快速测试</h3><p>12道核心题目 / 约3分钟 / 快速了解</p></div></button>
+<div id="tResume" style="display:none;margin-top:16px"><button class="bt bou bf" onclick="resumeT()">继续上次未完成的测试</button></div>
+</div>
+<div class="tqp" id="tQP">
+<button class="tpb2" onclick="pauseT()">&#x23F8;</button>
+<div style="padding:16px 20px 8px"><div style="font-size:12px;color:var(--g);text-align:right;margin-bottom:6px" id="tPT">1/24</div><div class="pb"><div class="pf" id="tPF" style="width:4%"></div></div></div>
+<div style="flex:1;padding:20px;display:flex;flex-direction:column"><div style="font-size:13px;color:var(--g);margin-bottom:8px" id="tQN">第 1 题</div><div style="font-size:18px;font-weight:700;line-height:1.6;margin-bottom:24px;min-height:60px" id="tQT"></div><div id="tOpts" style="flex:1;display:flex;flex-direction:column;gap:12px"></div></div>
+</div>
+</div>
+
+<div class="pg" id="page-report"><div class="rp2" id="rCt"></div></div>
+
+<div class="pg" id="page-card">
+<div style="padding:20px 0 0"><div class="stl" style="padding:0 20px;margin-bottom:8px">选择名片模板</div><div class="ctpls" id="cTpls"></div></div>
+<div class="cpv" id="cPv"></div><div class="ced" id="cEd"></div>
+<div style="display:flex;gap:12px;padding:0 20px 20px"><button class="bt bp" style="flex:1" onclick="saveCd()">保存名片</button><button class="bt bb" style="flex:1" onclick="shareCd()">分享名片</button></div>
+</div>
+
+<div class="pg" id="page-square">
+<div style="padding:16px 20px 0"><h2 style="font-size:20px;font-weight:700">同频广场</h2><p style="font-size:12px;color:var(--g);margin-top:2px">找到和你同频的灵魂</p></div>
+<div class="sf2"><div class="sfi on" data-f="all" onclick="filtP(this)">全部</div><div class="sfi" data-f="same" onclick="filtP(this)">同人格</div><div class="sfi" data-f="match" onclick="filtP(this)">高适配</div><div class="sfi" data-f="hot" onclick="filtP(this)">热门</div></div>
+<div class="sps" id="sPosts"></div>
+<button class="sfab" onclick="showPM()">+</button>
+</div>
+
+<div class="pg" id="page-match">
+<div class="tmm" id="mIn"><h2>人格匹配</h2><p style="font-size:13px;color:var(--g);margin-bottom:20px">输入对方的MBTI类型，看看你们的适配度</p>
+<div style="margin-bottom:16px"><div style="font-size:13px;color:var(--g);margin-bottom:8px">选择类型</div><div id="tsWrap"></div><div class="mtd" id="mTD">----</div></div>
+<div style="margin-bottom:20px"><div style="font-size:13px;color:var(--g);margin-bottom:8px">选择场景</div>
+<div style="display:flex;gap:10px;justify-content:center"><div class="sb2 sl" data-s="couple" onclick="selSc(this)">&#x1F491; 情侣</div><div class="sb2" data-s="friend" onclick="selSc(this)">&#x1F91D; 朋友</div><div class="sb2" data-s="colleague" onclick="selSc(this)">&#x1F4BC; 同事</div></div></div>
+<button class="bt bp bf" onclick="startM()" id="mBtn">开始匹配</button></div>
+<div class="mr2" id="mRes"></div>
+</div>
+
+<div class="pg thp2" id="page-treehole">
+<div style="padding:24px 20px 16px;text-align:center;position:relative;z-index:1"><h2 style="font-size:20px;font-weight:700;margin-bottom:4px">&#x2728; 人格树洞</h2><p style="font-size:12px;opacity:.7">在这里，每一颗星星都值得被看见</p></div>
+<div id="thPosts" style="padding:0 16px 16px;position:relative;z-index:1"></div>
+<div style="padding:16px;position:relative;z-index:1"><textarea id="thPT" placeholder="说点什么吧，这里很安全..." style="width:100%;height:80px;padding:12px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:13px;font-family:inherit;resize:none"></textarea><button class="bt bp bf" style="margin-top:10px" onclick="pubTH()">发送到星空</button></div>
+<div style="padding:16px;text-align:center;position:relative;z-index:1"><a href="javascript:void(0)" onclick="toast('如果你需要帮助，请拨打心理援助热线：400-161-9995')" style="color:rgba(255,255,255,.6);font-size:12px;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.3)">&#x1F499; 心理健康资源 / 获取专业帮助</a></div>
+</div>
+
+<div class="pg" id="page-profile">
+<div class="ph2"><div class="pav2" id="pAv" style="background:var(--p)">?</div><div class="hn" id="pNm" style="font-size:20px">探索者</div><div style="font-size:12px;color:var(--g);margin-top:4px" id="pMeta">尚未测试 / 人格新手</div></div>
+<div class="pst2"><div class="psi2"><div class="sn2" id="sDays">0</div><div class="sl2">探索天数</div></div><div class="psi2"><div class="sn2" id="sMatch">0</div><div class="sl2">匹配次数</div></div><div class="psi2"><div class="sn2" id="sPts">0</div><div class="sl2">积分</div></div></div>
+<div style="padding:0 20px;margin-bottom:16px"><canvas id="wCv" height="80" style="width:100%;height:80px;border-radius:var(--rs)"></canvas></div>
+<div class="sec"><div class="stl">我的成就</div><div class="ag2" id="aGrid"></div></div>
+<div style="padding:0 20px">
+<div class="pmi2" onclick="nav('report')"><span class="mic2">&#x1F4CA;</span><span class="mtx2">我的报告</span><span class="mar2">&#x203A;</span></div>
+<div class="pmi2" onclick="nav('card')"><span class="mic2">&#x1FAAA;</span><span class="mtx2">我的名片</span><span class="mar2">&#x203A;</span></div>
+<div class="pmi2" onclick="toast('收藏功能开发中')"><span class="mic2">&#x2B50;</span><span class="mtx2">我的收藏</span><span class="mar2">&#x203A;</span></div>
+<div class="pmi2" onclick="toast('已查看成就列表')"><span class="mic2">&#x1F3C6;</span><span class="mtx2">我的成就</span><span class="mar2">&#x203A;</span></div>
+<div class="pmi2" onclick="toast('设置功能开发中')"><span class="mic2">&#x2699;</span><span class="mtx2">设置</span><span class="mar2">&#x203A;</span></div>
+<div class="pmi2" onclick="toast('帮助中心开发中')"><span class="mic2">&#x2753;</span><span class="mtx2">帮助</span><span class="mar2">&#x203A;</span></div>
+<div class="pmi2" onclick="toast('MBTI人格探索 v1.0')"><span class="mic2">&#x2139;</span><span class="mtx2">关于</span><span class="mar2">&#x203A;</span></div>
+</div>
+</div>
+
+<div class="bn" id="bNav">
+<div class="ni on" data-page="home" onclick="nav('home')"><span class="ic">&#x1F3E0;</span><span>首页</span></div>
+<div class="ni" data-page="square" onclick="nav('square')"><span class="ic">&#x1F4AC;</span><span>广场</span><span class="bdg" id="nBdg" style="display:none">3</span></div>
+<div class="ni" data-page="discover" onclick="nav('test')"><span class="ic">&#x1F50D;</span><span>发现</span></div>
+<div class="ni" data-page="profile" onclick="nav('profile')"><span class="ic">&#x1F464;</span><span>我的</span></div>
+</div>
+</div>
+<script>
+// ===== MBTI DATA =====
+var MB={
+INTJ:{n:'建筑师',k:['战略思维','独立自主','追求卓越','理性果断'],d:'富有想象力的战略思想家，一切皆在计划之中。',e:'内心丰富但外表冷静，习惯用理性分析情感，对亲密关系要求极高，一旦认定便忠贞不渝。需要学会表达自己的情感需求。',c:'天生的战略规划者，适合需要深度思考和长远规划的工作。在科学研究、技术开发、战略咨询等领域能发挥最大价值。',s:'社交圈子小而精，不喜欢无效社交，但与志同道合的人交流时会展现出惊人的深度和魅力。',co:'#6C5CE7'},
+INTP:{n:'逻辑学家',k:['逻辑严密','求知若渴','创新思维','独立思考'],d:'具有创造力的发明家，对知识有着不可抑制的渴望。',e:'情感世界复杂而深邃，经常陷入自我思考，需要大量独处时间来处理情绪。',c:'最适合需要创新和解决复杂问题的工作，在计算机科学、数学研究、哲学等领域如鱼得水。',s:'看似高冷实则内心热情，喜欢深度讨论而非闲聊，对感兴趣的话题会滔滔不绝。',co:'#A29BFE'},
+ENTJ:{n:'指挥官',k:['天生领袖','高效决断','目标导向','自信果断'],d:'大胆、富有想象力且意志强大的领导者。',e:'情感表达直接而强烈，重视效率和结果，有时会忽略他人的情感需求。',c:'天生的领导者和管理者，适合企业管理、创业、法律等领域。',s:'社交能力极强，善于调动资源，喜欢结交有能力的人，是人群中的焦点。',co:'#E17055'},
+ENTP:{n:'辩论家',k:['机智灵活','创意无限','善于辩论','适应力强'],d:'聪明好奇的思想者，不会放弃任何智力挑战。',e:'情感丰富多变，喜欢用幽默化解尴尬，对新鲜事物充满热情但容易三分钟热度。',c:'最适合需要创新和灵活应变的工作，创业者和变革者的天然候选人。',s:'社交达人，能和任何人聊得来，喜欢辩论和头脑风暴，是聚会中最有趣的人。',co:'#FDCB6E'},
+INFJ:{n:'提倡者',k:['理想主义','洞察力强','富有同理心','追求意义'],d:'安静而神秘，同时鼓舞人心且不知疲倦的理想主义者。',e:'极其敏感细腻，能深刻感知他人情绪，需要独处来恢复能量，对感情忠贞而深沉。',c:'最适合能实现理想和帮助他人的工作，在心理咨询、教育、公益、写作等领域如鱼得水。',s:'社交有选择性，更喜欢一对一的深度交流，是朋友们最信赖的倾听者。',co:'#74B9FF'},
+INFP:{n:'调停者',k:['浪漫理想','富有创意','温柔善良','追求真实'],d:'诗意、善良的利他主义者，总是热心地为正义事业提供帮助。',e:'情感世界如同一片深海，丰富而复杂，对美好事物有强烈的感知力。',c:'最适合能发挥创造力和表达自我的工作，在写作、艺术、心理咨询、设计等领域大放异彩。',s:'社交圈子不大但关系深厚，喜欢和志同道合的人进行灵魂层面的交流。',co:'#DFE6E9'},
+ENFJ:{n:'主人公',k:['天生的引导者','热情洋溢','善于激励','富有魅力'],d:'富有魅力和鼓舞人心的领导者，有能力吸引听众。',e:'情感表达能力极强，善于感染和激励他人，但有时会忽略自己的情感需求。',c:'最适合需要领导力和人际交往的工作，在管理、教育、人力资源等领域表现卓越。',s:'社交能力极强，善于察言观色，是团队中的灵魂人物。',co:'#55EFC4'},
+ENFP:{n:'竞选者',k:['热情洋溢','创意无限','善于社交','乐观积极'],d:'热情、有创造力且社交能力强的自由精灵。',e:'情感丰富外露，对生活充满热情，善于用积极的态度感染周围的人。',c:'最适合需要创造力和人际交往的工作，在创意、媒体、咨询等领域如鱼得水。',s:'社交蝴蝶，能和任何人成为朋友，善于发现他人的闪光点。',co:'#FF7675'},
+ISTJ:{n:'物流师',k:['可靠踏实','注重细节','责任心强','有条不紊'],d:'实际且注重事实的个人，可靠性不容怀疑。',e:'情感内敛而深沉，不善于表达但行动胜于言辞，对家人和伴侣极为忠诚。',c:'最适合需要精确和可靠性的工作，在会计、工程、项目管理等领域表现优异。',s:'社交圈稳定而持久，重视传统和规则，是朋友中最可靠的存在。',co:'#636E72'},
+ISFJ:{n:'守卫者',k:['温暖体贴','默默付出','忠诚可靠','注重和谐'],d:'非常专注且温暖的守护者，时刻准备保护所爱的人。',e:'极其敏感体贴，总是把别人的需求放在自己前面，需要学会关注自己的感受。',c:'最适合需要耐心和关怀的工作，在护理、教育、行政、社会工作等领域默默奉献。',s:'社交温和谦逊，不喜欢成为焦点，但却是朋友圈中最让人安心的存在。',co:'#B2BEC3'},
+ESTJ:{n:'总经理',k:['高效组织','果断务实','重视秩序','天生管理者'],d:'出色的管理者，在管理事物或人方面无与伦比。',e:'情感表达直接务实，重视家庭传统，通过行动而非言语来表达关爱。',c:'最适合需要组织和管理的工作，在企业管理、法律、军事、行政等领域表现卓越。',s:'社交积极务实，善于组织活动和维护秩序，是社区和团体中的中坚力量。',co:'#E17055'},
+ESFJ:{n:'执政官',k:['热心助人','善于社交','忠诚可靠','注重和谐'],d:'极有爱心、社交能力强且受欢迎的人。',e:'情感丰富外露，善于照顾他人的感受，是家庭和朋友圈中的温暖存在。',c:'最适合需要人际交往和关怀的工作，在教育、医疗、人力资源等领域如鱼得水。',s:'社交能力极强，善于维护人际关系，是聚会组织者和朋友圈的粘合剂。',co:'#FAB1A0'},
+ISTP:{n:'鉴赏家',k:['动手能力强','冷静理性','灵活应变','独立自主'],d:'大胆而实际的实验家，擅长使用各种形式的工具。',e:'情感内敛独立，不善于表达但内心丰富，需要大量个人空间和自由。',c:'最适合需要动手能力和技术专长的工作，在工程、技术、手工艺等领域表现卓越。',s:'社交随性自然，不喜欢被束缚，喜欢和志同道合的人一起做有趣的事情。',co:'#636E72'},
+ISFP:{n:'探险家',k:['艺术气质','温和敏感','活在当下','追求自由'],d:'灵活且富有魅力的艺术家，时刻准备探索和体验新事物。',e:'情感细腻丰富，对美有独特的感知力，习惯用行动而非语言表达爱意。',c:'最适合能发挥审美和创造力的工作，在设计、艺术、时尚、摄影等领域大放异彩。',s:'社交温和低调，不喜欢冲突，但在舒适的环境中会展现出迷人的一面。',co:'#FFEAA7'},
+ESTP:{n:'企业家',k:['行动派','机智灵活','善于应变','享受当下'],d:'聪明、精力充沛且善于感知的人，真正享受生活在边缘。',e:'情感直接而热烈，活在当下，喜欢刺激和冒险，不善于处理复杂的情感问题。',c:'最适合需要快速反应和实际行动的工作，在销售、创业、体育等领域表现卓越。',s:'社交能力极强，是天生的表演者和谈判者，在任何场合都能如鱼得水。',co:'#FDCB6E'},
+ESFP:{n:'表演者',k:['活力四射','热爱生活','善于娱乐','乐观开朗'],d:'自发的、精力充沛且热情的人，生命永远不会在他们身边无聊。',e:'情感外露热烈，善于感染他人的情绪，是朋友圈中的开心果和气氛担当。',c:'最适合需要表现力和人际交往的工作，在演艺、旅游、活动策划等领域如鱼得水。',s:'天生的社交达人，喜欢热闹和聚会，能让任何场合都变得生动有趣。',co:'#FF7675'}
+};
+
+var QS=[
+{dm:'EI',q:'周末终于来了！你的第一反应是：',o:[{t:'\u{1F389} 赶紧约朋友出去玩，宅着多浪费',v:'E'},{t:'\u{1F6CB} 太好了，终于可以宅家追剧了',v:'I'}]},
+{dm:'EI',q:'在一个满是陌生人的聚会上，你通常会：',o:[{t:'\u{1F91D} 主动搭讪，认识新朋友超有趣',v:'E'},{t:'\u{1F9D0} 找个安静的角落，观察大家',v:'I'}]},
+{dm:'EI',q:'加班到深夜终于下班了，你会：',o:[{t:'\u{1F4DE} 想找人聊聊今天的经历',v:'E'},{t:'\u{1F3A7} 戴上耳机，安静地一个人回家',v:'I'}]},
+{dm:'EI',q:'关于朋友圈，你更倾向于：',o:[{t:'\u{1F4F8} 经常分享生活，记录每个瞬间',v:'E'},{t:'\u{1F512} 偶尔才发一条，更喜欢默默围观',v:'I'}]},
+{dm:'EI',q:'一个人去旅行，你的感受是：',o:[{t:'\u{1F914} 有点无聊，想找人一起才好玩',v:'E'},{t:'\u{1F60C} 正好，享受独处的自由时光',v:'I'}]},
+{dm:'EI',q:'手机收到一条陌生号码来电，你会：',o:[{t:'\u{1F4F1} 好奇地接起来，看看是谁',v:'E'},{t:'\u{1F636} 不接，有急事会发短信的',v:'I'}]},
+{dm:'SN',q:'朋友给你讲一个离奇的故事，你的第一反应是：',o:[{t:'\u{1F9D0} "真的假的？有证据吗？"',v:'S'},{t:'\u{1F632} "哇！然后呢？快继续！"',v:'N'}]},
+{dm:'SN',q:'学习一项新技能时，你更喜欢：',o:[{t:'\u{1F4D6} 按照教程一步步来，稳扎稳打',v:'S'},{t:'\u{1F5FA} 先了解整体框架，再深入细节',v:'N'}]},
+{dm:'SN',q:'描述一家你喜欢的餐厅，你会说：',o:[{t:'\u{1F4CD} "在xx路xx号，招牌菜是红烧肉，人均80"',v:'S'},{t:'\u{2728} "氛围特别好，有一种温暖治愈的感觉"',v:'N'}]},
+{dm:'SN',q:'做重要决定时，你更依赖：',o:[{t:'\u{1F4CA} 过往的经验和实际数据',v:'S'},{t:'\u{1F52E} 直觉和第六感',v:'N'}]},
+{dm:'SN',q:'你更欣赏哪种人？',o:[{t:'\u{1F528} 脚踏实地、注重细节的实干家',v:'S'},{t:'\u{1F680} 充满想象力、天马行空的梦想家',v:'N'}]},
+{dm:'SN',q:'看完一部电影，你更想讨论：',o:[{t:'\u{1F3AC} 剧情逻辑和隐藏的细节彩蛋',v:'S'},{t:'\u{1F4AD} 主题隐喻和它带给你的情感共鸣',v:'N'}]},
+{dm:'TF',q:'好朋友因为失恋来找你哭诉，你会：',o:[{t:'\u{1F4A1} 帮ta理性分析问题出在哪里',v:'T'},{t:'\u{1F917} 先给ta一个大大的拥抱，陪ta哭',v:'F'}]},
+{dm:'TF',q:'在团队中发生分歧时，你倾向于：',o:[{t:'\u{2696} 就事论事，用逻辑说服对方',v:'T'},{t:'\u{1F91D} 寻求共识，照顾每个人的感受',v:'F'}]},
+{dm:'TF',q:'朋友做了一件你认为不对的事，你会：',o:[{t:'\u{1F3AF} 直接指出问题所在',v:'T'},{t:'\u{1F338} 委婉地表达你的看法，照顾ta的面子',v:'F'}]},
+{dm:'TF',q:'你觉得"正确的决定"应该是：',o:[{t:'\u{1F4D0} 客观上最优的选择',v:'T'},{t:'\u{1F49D} 让最多人开心的选择',v:'F'}]},
+{dm:'TF',q:'选择工作机会时，你更看重：',o:[{t:'\u{1F4C8} 发展前景和薪资待遇',v:'T'},{t:'\u{1F308} 团队氛围和工作意义',v:'F'}]},
+{dm:'TF',q:'有人说了一个不太好笑的笑话，你会：',o:[{t:'\u{1F610} 面无表情（笑不出来就是笑不出来）',v:'T'},{t:'\u{1F60A} 礼貌地笑一下（不想让对方尴尬）',v:'F'}]},
+{dm:'JP',q:'你的书桌/房间通常是：',o:[{t:'\u{2728} 整整齐齐、井井有条',v:'J'},{t:'\u{1F32A} 有点乱，但我知道东西在哪',v:'P'}]},
+{dm:'JP',q:'出去旅游，你会：',o:[{t:'\u{1F4CB} 提前做好详细攻略，精确到分钟',v:'J'},{t:'\u{1F3B2} 到了目的地再随机应变',v:'P'}]},
+{dm:'JP',q:'关于deadline，你的态度是：',o:[{t:'\u{1F3C1} 提前完成，绝不拖延',v:'J'},{t:'\u{1F525} 最后时刻灵感爆发',v:'P'}]},
+{dm:'JP',q:'你更喜欢哪种生活方式？',o:[{t:'\u{1F4C5} 有规律、有计划，一切尽在掌控',v:'J'},{t:'\u{1F388} 随性自由、充满惊喜和可能',v:'P'}]},
+{dm:'JP',q:'早上出门前，你通常会：',o:[{t:'\u{1F454} 提前想好今天穿什么',v:'J'},{t:'\u{1F440} 站在衣柜前临时决定',v:'P'}]},
+{dm:'JP',q:'收到一份意外的礼物，你的第一反应是：',o:[{t:'\u{1F914} 想到要回赠一份合适的礼物',v:'J'},{t:'\u{1F389} 开心地享受这份惊喜！',v:'P'}]}
+];
+
+var FACTS=['全世界只有约2%的人是INTJ，被称为"最稀有的人格类型"。','ENFP被称为"社交蝴蝶"，他们平均每年会认识200+个新朋友。','INFJ是最稀有的类型之一，据说全世界只有1-3%的人口。','ISTJ是最常见的男性人格类型，约占男性人口的16%。','ISFJ被称为"守护者"，他们是最有可能记住你生日的人格类型。','ENTP的辩论能力在所有类型中排名第一，他们享受智力上的交锋。','ESFP在所有类型中最有可能成为演艺人员或活动策划师。','INTP的大脑永远不会停止思考，他们甚至在睡觉时也在解决问题。','ENFJ被称为"天生的导师"，他们有一种神奇的能力让每个人都感到被理解。','ESTP是最有可能成为企业家的人格类型之一。','INFP拥有所有类型中最丰富的内心世界，他们的日记可以写成小说。','ESTJ是所有类型中最有组织能力的，他们的衣柜可能按颜色排列。','ISFP被称为"艺术家"，他们对美有与生俱来的敏感度。','ISTP是所有类型中最擅长修理东西的，他们被称为"工具大师"。','ESFJ是所有类型中最热心助人的，他们是社区活动的核心组织者。'];
+
+var SPOSTS=[
+{id:1,u:'匿名星星',tp:'INFP',an:true,ct:'今天在咖啡馆看到一个INTJ独自坐在角落看书，突然觉得好心动...这就是传说中的"被安静的力量吸引"吗？',tm:'2小时前',lk:42,cm:18},
+{id:2,u:'小太阳',tp:'ENFP',an:false,ct:'作为一个ENFP，我今天又同时开始了三个新项目...虽然一个都没完成，但是过程真的好开心！有没有同款小伙伴？',tm:'3小时前',lk:67,cm:23},
+{id:3,u:'匿名星星',tp:'INTJ',an:true,ct:'终于理解了为什么别人说INTJ难追了。不是不想谈恋爱，是真的觉得社交好累...有没有人能理解这种感觉？',tm:'5小时前',lk:89,cm:45},
+{id:4,u:'逻辑小王子',tp:'INTP',an:false,ct:'花了一整天研究MBTI的底层逻辑，发现很多测试题存在偏差。不过话说回来，人格分类本身就是一种简化模型，大家觉得呢？',tm:'6小时前',lk:56,cm:31},
+{id:5,u:'温暖守护',tp:'ISFJ',an:false,ct:'今天帮室友收拾了房间，ta说我是世界上最好的人。其实我只是看不过去而已啦~ISFJ的日常就是默默付出然后被感动到哭',tm:'8小时前',lk:73,cm:20},
+{id:6,u:'匿名星星',tp:'ENTP',an:true,ct:'刚和INTJ朋友辩论了三个小时关于"自由意志是否存在"的问题。虽然谁也没说服谁，但是真的好爽！',tm:'10小时前',lk:45,cm:38},
+{id:7,u:'行动派达人',tp:'ESTP',an:false,ct:'说走就走的旅行真的太爽了！昨天晚上决定今天去爬山，今早五点就出发了。',tm:'12小时前',lk:91,cm:27},
+{id:8,u:'匿名星星',tp:'INFJ',an:true,ct:'有时候觉得自己好像能读懂别人的情绪，但这种能力有时候也是一种负担...知道别人不开心却不知道该怎么帮忙，好无力。',tm:'1天前',lk:128,cm:56},
+{id:9,u:'小确幸',tp:'ESFP',an:false,ct:'今天在地铁上给一个老奶奶让座，她笑得特别开心！虽然是一件小事，但是一整天心情都超好~',tm:'1天前',lk:54,cm:15},
+{id:10,u:'效率达人',tp:'ENTJ',an:false,ct:'作为一个ENTJ，我必须说：计划赶不上变化，但有计划总比没计划好。今天的项目虽然出了意外，但因为提前准备了Plan B，一切顺利！',tm:'2天前',lk:38,cm:12}
+];
+
+var THPOSTS=[
+{id:1,tp:'INFP',ct:'有时候觉得自己活在一个不属于我的世界...好像永远无法融入人群，但又渴望被理解。',hg:23,tm:'刚刚'},
+{id:2,tp:'INFJ',ct:'太累了...总是把别人的情绪背在自己身上，今晚想好好哭一场。',hg:45,tm:'1小时前'},
+{id:3,tp:'INTJ',ct:'为什么我总是把关系搞砸？明明很在乎，却总是用最笨拙的方式表达。',hg:31,tm:'2小时前'},
+{id:4,tp:'ENFP',ct:'表面上嘻嘻哈哈，其实内心经常感到空虚...有没有人也是这样的？',hg:67,tm:'3小时前'},
+{id:5,tp:'ISFP',ct:'今天又被人说"太敏感了"...可是敏感不是缺点啊，我只是比别人更用心地感受这个世界。',hg:38,tm:'5小时前'},
+{id:6,tp:'ENTP',ct:'好像没有人真正了解我...他们只看到我搞笑的一面，却不知道深夜里我也会emo。',hg:29,tm:'昨天'}
+];
+
+var CTPLS=[{n:'紫色梦幻',bg:'linear-gradient(135deg,#6C5CE7,#A29BFE)'},{n:'海洋之心',bg:'linear-gradient(135deg,#0984E3,#74B9FF)'},{n:'暖阳橙光',bg:'linear-gradient(135deg,#E17055,#FDCB6E)'},{n:'森林绿意',bg:'linear-gradient(135deg,#00B894,#55EFC4)'},{n:'星空夜色',bg:'linear-gradient(135deg,#2D3436,#636E72)'}];
+var ACHS=[{id:'first_test',n:'初次探索',ic:'\u{1F31F}'},{id:'checkin_7',n:'坚持一周',ic:'\u{1F4C5}'},{id:'checkin_30',n:'月度达人',ic:'\u{1F4C6}'},{id:'match_5',n:'社交蝴蝶',ic:'\u{1F98B}'},{id:'post_3',n:'活跃分子',ic:'\u{1F4DD}'},{id:'hug_10',n:'温暖使者',ic:'\u{1F917}'},{id:'level_2',n:'探索者',ic:'\u{1F50D}'},{id:'level_3',n:'人格达人',ic:'\u{1F451}'}];
+// ===== STATE =====
+var st={mbti:null,nick:'探索者',pts:0,lv:0,regD:null,ckins:[],mCnt:0,pCnt:0,hCnt:0,achs:[],cTpl:0,cKw:[],cTips:'',tProg:null,tSc:null,mood:null,cked:false,lkP:[],hgTH:[],uP:[],uTH:[]};
+function loadS(){try{var s=localStorage.getItem('mbti_st');if(s){var p=JSON.parse(s);for(var k in p)st[k]=p[k];}if(!st.regD){st.regD=new Date().toISOString();svS();}}catch(e){}}
+function svS(){try{localStorage.setItem('mbti_st',JSON.stringify(st));}catch(e){}}
+function gLv(p){if(p>=1000)return{lv:3,n:'人格导师'};if(p>=500)return{lv:2,n:'人格达人'};if(p>=100)return{lv:1,n:'人格探索者'};return{lv:0,n:'人格新手'};}
+function addP(n){st.pts+=n;var l=gLv(st.pts);if(l.lv>st.lv){st.lv=l.lv;toast('\u{1F389} 恭喜升级为「'+l.n+'」！');}svS();}
+function chkA(){var na=[];
+if(st.mbti&&st.achs.indexOf('first_test')<0){st.achs.push('first_test');na.push('初次探索');}
+if(gStrk()>=7&&st.achs.indexOf('checkin_7')<0){st.achs.push('checkin_7');na.push('坚持一周');}
+if(gStrk()>=30&&st.achs.indexOf('checkin_30')<0){st.achs.push('checkin_30');na.push('月度达人');}
+if(st.mCnt>=5&&st.achs.indexOf('match_5')<0){st.achs.push('match_5');na.push('社交蝴蝶');}
+if(st.pCnt>=3&&st.achs.indexOf('post_3')<0){st.achs.push('post_3');na.push('活跃分子');}
+if(st.hCnt>=10&&st.achs.indexOf('hug_10')<0){st.achs.push('hug_10');na.push('温暖使者');}
+if(st.lv>=1&&st.achs.indexOf('level_2')<0){st.achs.push('level_2');na.push('探索者');}
+if(st.lv>=2&&st.achs.indexOf('level_3')<0){st.achs.push('level_3');na.push('人格达人');}
+svS();for(var i=0;i<na.length;i++)toast('\u{1F3C6} 解锁成就：'+na[i]);}
+function gStrk(){if(!st.ckins.length)return 0;var s=0,today=new Date().toDateString(),arr=st.ckins.slice().sort().reverse();
+for(var i=0;i<arr.length;i++){var d=new Date(arr[i]).toDateString();
+if(i===0){if(d!==today&&d!==new Date(Date.now()-864e5).toDateString())break;}
+else{if(d!==new Date(new Date(arr[i-1]).getTime()-864e5).toDateString())break;}s++;}return s;}
+function gDays(){return Math.max(1,Math.floor((Date.now()-new Date(st.regD).getTime())/864e5));}
+
+// ===== TOAST & MODAL =====
+function toast(m){var c=document.getElementById('TC'),t=document.createElement('div');t.className='tt';t.textContent=m;c.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove();},2600);}
+function sM(h){document.getElementById('MC').innerHTML=h;document.getElementById('MO').classList.add('sh');}
+function cM(){document.getElementById('MO').classList.remove('sh');}
+
+// ===== ROUTER =====
+var cPage='home';var mPages=['home','square','test','profile'];
+function nav(p){if(cPage===p)return;var o=document.getElementById('page-'+cPage),n=document.getElementById('page-'+p);if(!n)return;
+o.classList.remove('on');o.classList.add('so');setTimeout(function(){o.classList.remove('so');},350);
+n.classList.add('on');cPage=p;window.location.hash=p;
+document.querySelectorAll('.ni').forEach(function(i){i.classList.toggle('on',i.dataset.page===(mPages.indexOf(p)>=0?p:'discover'));});
+if(p==='home')rHome();if(p==='report')rReport();if(p==='card')rCard();if(p==='square')rSquare();
+if(p==='match')rMatch();if(p==='treehole')rTH();if(p==='profile')rProfile();if(p==='test')rTestP();}
+window.addEventListener('hashchange',function(){var h=window.location.hash.slice(1);if(h&&h!==cPage)nav(h);});
+
+// ===== HOME =====
+var selMood=null;
+function selM(el){document.querySelectorAll('.mb2').forEach(function(b){b.classList.remove('sl');});el.classList.add('sl');selMood=el.dataset.mood;}
+function doCK(){var today=new Date().toDateString();if(st.cked&&st.ckins.indexOf(today)>=0){toast('今天已经打卡过了哦~');return;}
+if(!selMood){toast('请先选择今天的心情');return;}
+st.cked=true;if(st.ckins.indexOf(today)<0)st.ckins.push(today);st.mood=selMood;addP(10);chkA();svS();toast('\u2705 打卡成功！+10积分');rHome();}
+function rHome(){var tp=st.mbti,d=tp?MB[tp]:null;
+document.getElementById('hAv').textContent=tp||'?';document.getElementById('hAv').style.background=d?d.co:'var(--p)';
+document.getElementById('hNm').textContent=st.nick;document.getElementById('hTy').textContent=tp?tp+' / '+d.n:'尚未测试';
+var tg=document.getElementById('hTg');
+if(d){tg.innerHTML=d.k.slice(0,3).map(function(k){return'<span class="tg">'+k+'</span>';}).join('');}
+else{tg.innerHTML='<span class="tg" style="cursor:pointer" onclick="nav(\'test\')">去测试 &rarr;</span>';}
+var wv=document.getElementById('hWv');
+if(tp){wv.style.display='flex';var dm={E:'外向',I:'内向',S:'感觉',N:'直觉',T:'思维',F:'情感',J:'判断',P:'感知'};
+var ls=tp.split(''),wt=ls.map(function(l){return dm[l];}).join('\u00B7');
+document.getElementById('hWt').textContent='近期人格倾向：'+wt;}else{wv.style.display='none';}
+document.getElementById('dFact').textContent=FACTS[Math.floor(Date.now()/864e5)%FACTS.length];
+var today=new Date().toDateString();
+if(st.ckins.indexOf(today)>=0){document.querySelectorAll('.mb2').forEach(function(b){b.classList.toggle('sl',b.dataset.mood===st.mood);});
+var cb=document.querySelector('.sec .bt');if(cb){cb.textContent='\u2705 今日已打卡';cb.style.opacity='0.6';}}
+
+// ===== TEST =====
+var ts={mode:null,qs:[],cur:0,ans:[],paused:false};
+function rTestP(){var md=document.getElementById('tModes'),qp=document.getElementById('tQP'),rs=document.getElementById('tResume');
+rs.style.display=st.tProg?'block':'none';
+if(ts.qs.length>0&&!ts.paused){md.style.display='none';qp.classList.add('on');showQ();}else{md.style.display='block';qp.classList.remove('on');}}
+function startT(mode){ts.mode=mode;ts.cur=0;ts.ans=[];ts.paused=false;
+if(mode==='quick'){ts.qs=[];['EI','SN','TF','JP'].forEach(function(dm){var qs=QS.filter(function(q){return q.dm===dm;}).slice(0,3);ts.qs=ts.qs.concat(qs);});}
+else{ts.qs=QS.slice();}
+ts.qs=ts.qs.sort(function(){return Math.random()-0.5;});
+st.tProg={mode:mode,cur:0,ans:[]};svS();
+document.getElementById('tModes').style.display='none';document.getElementById('tQP').classList.add('on');showQ();}
+function resumeT(){if(!st.tProg)return;var p=st.tProg;ts.mode=p.mode;ts.cur=p.cur;ts.ans=p.ans;ts.paused=false;
+if(p.mode==='quick'){ts.qs=[];['EI','SN','TF','JP'].forEach(function(dm){ts.qs=ts.qs.concat(QS.filter(function(q){return q.dm===dm;}).slice(0,3));});}
+else{ts.qs=QS.slice();}
+document.getElementById('tModes').style.display='none';document.getElementById('tQP').classList.add('on');showQ();}
+function pauseT(){ts.paused=true;st.tProg={mode:ts.mode,cur:ts.cur,ans:ts.ans};svS();
+document.getElementById('tQP').classList.remove('on');document.getElementById('tModes').style.display='block';toast('测试已暂停，下次可以继续');}
+function showQ(){var tot=ts.qs.length,idx=ts.cur,q=ts.qs[idx];
+document.getElementById('tPT').textContent=(idx+1)+'/'+tot;
+document.getElementById('tPF').style.width=((idx+1)/tot*100)+'%';
+document.getElementById('tQN').textContent='第 '+(idx+1)+' 题';
+document.getElementById('tQT').textContent=q.q;
+var oe=document.getElementById('tOpts');oe.innerHTML='';
+q.o.forEach(function(opt,i){var d=document.createElement('div');d.className='tob';d.innerHTML=opt.t;
+d.onclick=function(){selA(opt.v);};d.style.animation='su .3s ease '+(i*0.08)+'s both';oe.appendChild(d);});}
+function selA(v){var opts=document.querySelectorAll('.tob');opts.forEach(function(o){o.style.pointerEvents='none';});
+ts.ans.push({dm:ts.qs[ts.cur].dm,v:v});ts.cur++;
+st.tProg={mode:ts.mode,cur:ts.cur,ans:ts.ans};svS();
+setTimeout(function(){if(ts.cur>=ts.qs.length)finT();else showQ();},400);}
+function finT(){var c={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+ts.ans.forEach(function(a){c[a.v]++;});
+var tp=(c.E>=c.I?'E':'I')+(c.S>=c.N?'S':'N')+(c.T>=c.F?'T':'F')+(c.J>=c.P?'J':'P');
+var t1=(c.E+c.I)||1,t2=(c.S+c.N)||1,t3=(c.T+c.F)||1,t4=(c.J+c.P)||1;
+st.tSc={E:Math.round(c.E/t1*100),I:Math.round(c.I/t1*100),S:Math.round(c.S/t2*100),N:Math.round(c.N/t2*100),T:Math.round(c.T/t3*100),F:Math.round(c.F/t3*100),J:Math.round(c.J/t4*100),P:Math.round(c.P/t4*100)};
+st.mbti=tp;st.tProg=null;if(!st.nick||st.nick==='探索者')st.nick=MB[tp].n;
+st.cKw=MB[tp].k.slice();st.cTips='和我相处时，请给我一些独处的时间，但别忘了偶尔来找我聊天~';
+addP(50);chkA();svS();ts={mode:null,qs:[],cur:0,ans:[],paused:false};nav('report');}
+
+// ===== REPORT =====
+function rReport(){if(!st.mbti){document.getElementById('rCt').innerHTML='<div style="padding:60px 20px;text-align:center"><p style="font-size:16px;color:var(--g)">还没有测试结果</p><button class="bt bp" style="margin-top:20px" onclick="nav(\'test\')">去测试</button></div>';return;}
+var tp=st.mbti,d=MB[tp],sc=st.tSc||{E:50,I:50,S:50,N:50,T:50,F:50,J:50,P:50};
+var h='<div class="an"><div style="font-size:14px;color:var(--g);margin-bottom:8px">你的人格类型是</div>';
+h+='<div class="rr2">';tp.split('').forEach(function(l,i){h+='<span class="rl" style="animation-delay:'+(i*0.2)+'s">'+l+'</span>';});h+='</div>';
+h+='<div class="rtn">'+d.n+'</div><div class="rtd">'+d.d+'</div>';
+h+='<div class="rkw">'+d.k.map(function(k){return'<span class="bg bgp">'+k+'</span>';}).join('')+'</div></div>';
+h+='<div class="rcw"><canvas id="radarC" width="280" height="280"></canvas></div>';
+h+='<div class="rtabs"><div class="rtab on" onclick="swTab(this,\'emotion\')">情感聚焦</div><div class="rtab" onclick="swTab(this,\'career\')">职场聚焦</div><div class="rtab" onclick="swTab(this,\'social\')">社交聚焦</div></div>';
+h+='<div class="rtc on" id="tab-emotion"><div class="cd"><p style="font-size:14px;line-height:1.8">'+d.e+'</p></div></div>';
+h+='<div class="rtc" id="tab-career"><div class="cd"><p style="font-size:14px;line-height:1.8">'+d.c+'</p></div></div>';
+h+='<div class="rtc" id="tab-social"><div class="cd"><p style="font-size:14px;line-height:1.8">'+d.s+'</p></div></div>';
+h+='<div style="margin:16px 20px"><div class="stl">场景推荐</div><div style="display:flex;gap:10px">';
+h+='<div class="cd" style="flex:1;text-align:center"><div style="font-size:24px;margin-bottom:6px">\u{1F491}</div><div style="font-size:12px;font-weight:600">社交</div><div style="font-size:11px;color:var(--g);margin-top:4px">'+gSceneTip(tp,'social')+'</div></div>';
+h+='<div class="cd" style="flex:1;text-align:center"><div style="font-size:24px;margin-bottom:6px">\u{1F3E0}</div><div style="font-size:12px;font-weight:600">生活</div><div style="font-size:11px;color:var(--g);margin-top:4px">'+gSceneTip(tp,'life')+'</div></div>';
+h+='<div class="cd" style="flex:1;text-align:center"><div style="font-size:24px;margin-bottom:6px">\u{1F4BC}</div><div style="font-size:12px;font-weight:600">职场</div><div style="font-size:11px;color:var(--g);margin-top:4px">'+gSceneTip(tp,'work')+'</div></div>';
+h+='</div></div>';
+h+='<div style="display:flex;gap:12px;padding:0 20px;margin-top:20px"><button class="bt bp" style="flex:1" onclick="genPoster()">生成人格海报</button><button class="bt bb" style="flex:1" onclick="shareR()">分享给朋友</button></div><div style="height:20px"></div>';
+document.getElementById('rCt').innerHTML=h;setTimeout(function(){drawRadar(sc);},600);}
+function swTab(el,tab){document.querySelectorAll('.rtab').forEach(function(t){t.classList.remove('on');});document.querySelectorAll('.rtc').forEach(function(c){c.classList.remove('on');});el.classList.add('on');document.getElementById('tab-'+tab).classList.add('on');}
+function gSceneTip(tp,sc){
+var tips={social:{E:'多参加社交活动',I:'选择小型聚会',S:'一起做手工/运动',N:'一起看展/聊理想',T:'参加辩论/桌游',F:'一起做公益/志愿者',J:'组织有计划的活动',P:'随性的户外探险'},
+life:{E:'尝试新的餐厅和活动',I:'给自己留出独处时间',S:'整理家居环境',N:'阅读/冥想/创作',T:'制定生活计划',F:'布置温馨的家居',J:'建立日常规律',P:'保持生活的惊喜感'},
+work:{E:'适合需要沟通的岗位',I:'适合独立深度工作',S:'注重细节和执行',N:'适合创新和规划',T:'适合分析和决策',F:'适合协调和支持',J:'适合项目管理',P:'适合灵活应变的工作'}};
+var ls=tp.split('');var r=[];
+if(sc==='social')r.push(tips.social[ls[0]],tips.social[ls[2]]);
+else if(sc==='life')r.push(tips.life[ls[1]],tips.life[ls[3]]);
+else r.push(tips.work[ls[0]],tips.work[ls[2]]);
+return r.join('；');}
+function drawRadar(sc){var cv=document.getElementById('radarC');if(!cv)return;var ctx=cv.getContext('2d'),w=cv.width,h=cv.height,cx=w/2,cy=h/2,r=Math.min(cx,cy)-40;
+var dims=[{l:'E 外向',v:sc.E},{l:'S 感觉',v:sc.S},{l:'T 思维',v:sc.T},{l:'J 判断',v:sc.J}],n=dims.length;
+ctx.clearRect(0,0,w,h);
+for(var ring=1;ring<=4;ring++){ctx.beginPath();for(var i=0;i<=n;i++){var a=Math.PI*2/n*i-Math.PI/2,rr=r*ring/4;ctx.lineTo(cx+rr*Math.cos(a),cy+rr*Math.sin(a));}ctx.closePath();ctx.strokeStyle='rgba(197,179,230,0.3)';ctx.lineWidth=1;ctx.stroke();}
+for(var i=0;i<n;i++){var a=Math.PI*2/n*i-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.strokeStyle='rgba(197,179,230,0.3)';ctx.stroke();}
+ctx.beginPath();dims.forEach(function(d,i){var a=Math.PI*2/n*i-Math.PI/2,rr=r*d.v/100;ctx.lineTo(cx+rr*Math.cos(a),cy+rr*Math.sin(a));});ctx.closePath();ctx.fillStyle='rgba(197,179,230,0.3)';ctx.fill();ctx.strokeStyle='#C5B3E6';ctx.lineWidth=2;ctx.stroke();
+dims.forEach(function(d,i){var a=Math.PI*2/n*i-Math.PI/2,rr=r*d.v/100;ctx.beginPath();ctx.arc(cx+rr*Math.cos(a),cy+rr*Math.sin(a),4,0,Math.PI*2);ctx.fillStyle='#C5B3E6';ctx.fill();
+var lx=cx+(r+24)*Math.cos(a),ly=cy+(r+24)*Math.sin(a);ctx.fillStyle='#2D3436';ctx.font='11px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d.l+' '+d.v+'%',lx,ly);});}
+function genPoster(){var tp=st.mbti,d=MB[tp];
+sM('<div class="mh"><span class="mt">人格海报</span><button class="mx" onclick="cM()">\u00D7</button></div><div style="display:flex;justify-content:center;padding:20px"><canvas id="posterC" width="340" height="480"></canvas></div><button class="bt bp bf" onclick="toast(\'海报已保存到相册\');cM()" style="margin-top:12px">保存海报</button>');
+setTimeout(function(){var cv=document.getElementById('posterC');if(!cv)return;var ctx=cv.getContext('2d'),w=cv.width,h=cv.height;
+var grd=ctx.createLinearGradient(0,0,w,h);grd.addColorStop(0,'#C5B3E6');grd.addColorStop(1,'#B8D4E3');ctx.fillStyle=grd;ctx.fillRect(0,0,w,h);
+ctx.fillStyle='rgba(255,255,255,0.1)';ctx.beginPath();ctx.arc(300,60,80,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(40,420,60,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#fff';ctx.font='bold 64px system-ui';ctx.textAlign='center';ctx.fillText(tp,w/2,120);
+ctx.font='bold 22px system-ui';ctx.fillText(d.n,w/2,160);
+ctx.font='13px system-ui';ctx.fillStyle='rgba(255,255,255,0.85)';wT(ctx,d.d,w/2,195,w-60,20);
+ctx.font='12px system-ui';var kwY=260,kws=d.k.map(function(k){return ctx.measureText(k).width+24;});
+var tw=kws.reduce(function(a,b){return a+b;},0)+(d.k.length-1)*8;var kx=(w-tw)/2;
+d.k.forEach(function(k,i){ctx.fillStyle='rgba(255,255,255,0.25)';ctx.beginPath();ctx.rect(kx,kwY,kws[i],26);ctx.fill();
+ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(k,kx+kws[i]/2,kwY+17);kx+=kws[i]+8;});
+ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillText('MBTI人格探索 \u00B7 发现真实的自己',w/2,h-40);},100);}
+function wT(ctx,text,x,y,mw,lh){var ls='',ly=y;for(var i=0;i<text.length;i++){var t=ls+text[i];if(ctx.measureText(t).width>mw&&ls){ctx.fillText(ls,x,ly);ls=text[i];ly+=lh;}else ls=t;}ctx.fillText(ls,x,ly);}
+function shareR(){sM('<div class="mh"><span class="mt">分享给朋友</span><button class="mx" onclick="cM()">\u00D7</button></div><div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:12px">\u{1F4E4}</div><p style="font-size:14px;color:var(--g);margin-bottom:20px">选择分享方式</p><div style="display:flex;gap:16px;justify-content:center"><div style="text-align:center;cursor:pointer" onclick="toast(\'已复制链接\');cM()"><div style="font-size:32px">\u{1F517}</div><div style="font-size:11px;margin-top:4px">复制链接</div></div><div style="text-align:center;cursor:pointer" onclick="toast(\'已生成海报\');cM()"><div style="font-size:32px">\u{1F5BC}</div><div style="font-size:11px;margin-top:4px">生成图片</div></div><div style="text-align:center;cursor:pointer" onclick="toast(\'已分享\');cM()"><div style="font-size:32px">\u{1F4AC}</div><div style="font-size:11px;margin-top:4px">发送给好友</div></div></div></div>');}
+// ===== CARD =====
+function rCard(){var tp=st.mbti||'INTJ',d=MB[tp],ti=st.cTpl||0,tpl=CTPLS[ti],kw=st.cKw.length?st.cKw:d.k,tips=st.cTips||'和我相处时，请给我一些独处的时间~';
+var th='';CTPLS.forEach(function(t,i){th+='<div class="ctpl'+(i===ti?' on':'')+'" style="background:'+t.bg+'" onclick="selCT('+i+')">'+t.n+'</div>';});
+document.getElementById('cTpls').innerHTML=th;
+document.getElementById('cPv').style.background=tpl.bg;
+document.getElementById('cPv').innerHTML='<div class="ca">'+tp+'</div><div class="ct2">'+tp+' \u00B7 '+d.n+'</div><div class="ck">'+kw.map(function(k){return'<span>'+k+'</span>';}).join('')+'</div><div class="ctt">和我相处的小Tips</div><div class="ctx">'+tips+'</div>';
+document.getElementById('cEd').innerHTML='<label>关键词（用逗号分隔）</label><input type="text" id="eKW" value="'+kw.join('\uff0c')+'" oninput="updCP()"><label>相处小Tips</label><textarea id="eTips" rows="3" oninput="updCP()">'+tips+'</textarea>';}
+function selCT(i){st.cTpl=i;svS();rCard();}
+function updCP(){var kw=document.getElementById('eKW'),tips=document.getElementById('eTips');
+if(kw)st.cKw=kw.value.split(/[,，]/).map(function(s){return s.trim();}).filter(Boolean);if(tips)st.cTips=tips.value;svS();
+var tp=st.mbti||'INTJ',d=MB[tp],tpl=CTPLS[st.cTpl||0],pv=document.getElementById('cPv');pv.style.background=tpl.bg;
+pv.innerHTML='<div class="ca">'+tp+'</div><div class="ct2">'+tp+' \u00B7 '+d.n+'</div><div class="ck">'+st.cKw.map(function(k){return'<span>'+k+'</span>';}).join('')+'</div><div class="ctt">和我相处的小Tips</div><div class="ctx">'+st.cTips+'</div>';}
+function saveCd(){svS();toast('名片已保存');addP(5);}
+function shareCd(){toast('名片已分享');addP(15);}
+
+// ===== SQUARE =====
+var sqFilt='all';
+function rSquare(){var posts=SPOSTS.slice().concat(st.uP.map(function(p){return{id:p.id,u:st.nick,tp:st.mbti||'????',an:false,ct:p.ct,tm:p.tm,lk:p.lk||0,cm:p.cm||0};}));
+if(sqFilt==='same'&&st.mbti)posts=posts.filter(function(p){return p.tp===st.mbti;});
+else if(sqFilt==='hot')posts=posts.sort(function(a,b){return b.lk-a.lk;});
+else if(sqFilt==='match'&&st.mbti)posts=posts.filter(function(p){return gCompat(st.mbti,p.tp,'friend')>=70;});
+var el=document.getElementById('sPosts');el.innerHTML=posts.map(function(p){
+var co=MB[p.tp]?MB[p.tp].co:'var(--g)',lk=st.lkP.indexOf(p.id)>=0;
+return'<div class="sp2"><div class="sph"><div class="spa" style="background:'+co+'">'+(p.an?'\u{1F31F}':p.tp.charAt(0))+'</div><div class="spun"><div class="spnm">'+(p.an?'匿名':p.u)+(p.an?'<span class="an2">匿名</span>':'')+' <span class="bg bgp" style="font-size:10px;padding:1px 6px">'+p.tp+'</span></div><div class="sptm">'+p.tm+'</div></div></div><div class="spc">'+p.ct+'</div><div class="spac"><div class="spa3'+(lk?' lk':'')+'" onclick="togLK('+p.id+')">'+(lk?'\u2764':'\u{1F90D}')+' <span>'+(p.lk+(lk?1:0))+'</span></div><div class="spa3" onclick="toast(\'评论功能开发中\')">\u{1F4AC} '+p.cm+'</div></div></div>';}).join('');}
+function filtP(el){document.querySelectorAll('.sfi').forEach(function(f){f.classList.remove('on');});el.classList.add('on');sqFilt=el.dataset.f;rSquare();}
+function togLK(id){var i=st.lkP.indexOf(id);if(i>=0)st.lkP.splice(i,1);else st.lkP.push(id);svS();rSquare();}
+function showPM(){sM('<div class="mh"><span class="mt">发布动态</span><button class="mx" onclick="cM()">\u00D7</button></div><div><textarea id="pubTxt" placeholder="分享你的想法..." style="width:100%;height:120px;padding:14px;border:2px solid var(--gl);border-radius:var(--rs);font-size:14px;font-family:inherit;resize:none"></textarea><div style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px"><span>匿名发布</span><div class="tsw" id="anonT" onclick="this.classList.toggle(\'on\')"></div></div><div style="margin-top:12px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">选择话题</div><div class="ptg"><span class="pt2" onclick="this.classList.toggle(\'sl\')">日常分享</span><span class="pt2" onclick="this.classList.toggle(\'sl\')">心动瞬间</span><span class="pt2" onclick="this.classList.toggle(\'sl\')">深夜树洞</span><span class="pt2" onclick="this.classList.toggle(\'sl\')">灵魂对话</span><span class="pt2" onclick="this.classList.toggle(\'sl\')">职场心得</span><span class="pt2" onclick="this.classList.toggle(\'sl\')">温暖日常</span></div></div><button class="bt bp bf" style="margin-top:16px" onclick="pubPost()">发布</button></div>');}
+function pubPost(){var txt=document.getElementById('pubTxt').value.trim();if(!txt){toast('请输入内容');return;}
+var an=document.getElementById('anonT').classList.contains('on');
+st.uP.push({id:Date.now(),ct:txt,tm:'刚刚',lk:0,cm:0});st.pCnt++;addP(20);chkA();svS();cM();toast('发布成功！+20积分');rSquare();}
+
+// ===== MATCH =====
+var mType='----',mScene='couple';
+function rMatch(){var lts=[['E','I'],['S','N'],['T','F'],['J','P']],h='';
+lts.forEach(function(pair,i){h+='<div style="display:flex;gap:6px;margin-bottom:8px;justify-content:center">';
+pair.forEach(function(l){var sel=mType[i]===l;h+='<div class="tlb'+(sel?' sl':'')+'" onclick="selTL('+i+',\''+l+'\')">'+l+'</div>';});h+='</div>';});
+document.getElementById('tsWrap').innerHTML=h;document.getElementById('mTD').textContent=mType;
+document.querySelectorAll('.sb2').forEach(function(b){b.classList.toggle('sl',b.dataset.s===mScene);});
+document.getElementById('mRes').classList.remove('sh');document.getElementById('mIn').style.display='block';}
+function selTL(pos,l){var a=mType.split('');a[pos]=l;mType=a.join('');rMatch();}
+function selSc(el){mScene=el.dataset.s;document.querySelectorAll('.sb2').forEach(function(b){b.classList.remove('sl');});el.classList.add('sl');}
+function startM(){if(mType.indexOf('-')>=0||mType.length!==4){toast('请选择完整的MBTI类型');return;}
+if(!st.mbti){toast('请先完成人格测试');return;}
+var btn=document.getElementById('mBtn');btn.innerHTML='<div class="sp" style="width:20px;height:20px;border-width:2px;margin:0"></div> 匹配中...';btn.disabled=true;
+setTimeout(function(){btn.innerHTML='开始匹配';btn.disabled=false;showMR();},1500);}
+function gCompat(t1,t2,sc){if(t1===t2)return sc==='couple'?75:sc==='friend'?95:85;
+var s=50,s1=t1.split(''),s2=t2.split('');
+s1.forEach(function(l,i){if(l===s2[i])s+=8;});
+if(s1[0]!==s2[0])s+=(sc==='couple'?12:sc==='friend'?2:5);
+if(s1[2]!==s2[2])s+=(sc==='couple'?10:sc==='friend'?3:4);
+if(s1[1]===s2[1])s+=(sc==='friend'?8:3);
+if(s1[3]===s2[3])s+=(sc==='colleague'?10:2);
+var gp={couple:[['INTJ','ENFP'],['INTP','ENTJ'],['INFJ','ENTP'],['INFP','ENFJ'],['ISTJ','ESFP'],['ISFJ','ESTP']],
+friend:[['INFP','INFJ'],['ENFP','ENFJ'],['INTJ','INTP'],['ISTJ','ISFJ'],['ENTP','ENTJ']],
+colleague:[['INTJ','ENTJ'],['INTP','INTJ'],['ISTJ','ESTJ'],['INFJ','ENFJ'],['ISFJ','ESFJ']]};
+(gp[sc]||[]).forEach(function(p){if((t1===p[0]&&t2===p[1])||(t1===p[1]&&t2===p[0]))s+=15;});
+return Math.min(99,Math.max(20,s));}
+function showMR(){var my=st.mbti,their=mType,sc=gCompat(my,their,mScene),md=MB[my],td=MB[their];
+var sn={couple:'情侣',friend:'朋友',colleague:'同事'};
+var str=gMS(my,their,mScene),chl=gMC(my,their,mScene),tip=gMT(my,their,mScene);
+var h='<div style="text-align:center;margin-bottom:20px" class="an"><div style="font-size:14px;color:var(--g);margin-bottom:8px">'+my+' \u00D7 '+their+' \u00B7 '+sn[mScene]+'模式</div>';
+h+='<div class="msc" style="--sd:'+(sc*3.6)+'deg"><div class="msn">'+sc+'</div><div class="msl">适配度</div></div>';
+h+='<div style="font-size:13px;color:var(--g)">'+md.n+' & '+td.n+'</div></div>';
+h+='<div style="display:flex;justify-content:center;margin:20px 0"><canvas id="mRadar" width="280" height="200"></canvas></div>';
+h+='<div class="md2 an d1"><h4>\u{1F4AA} 优势互补</h4><p>'+str+'</p></div>';
+h+='<div class="md2 an d2"><h4>\u{26A0}\uFE0F 潜在挑战</h4><p>'+chl+'</p></div>';
+h+='<div class="md2 an d3"><h4>\u{1F4A1} 相处建议</h4><p>'+tip+'</p></div>';
+h+='<button class="bt bp bf" style="margin-top:16px" onclick="nav(\'match\')">重新匹配</button><div style="height:20px"></div>';
+document.getElementById('mIn').style.display='none';document.getElementById('mRes').innerHTML=h;document.getElementById('mRes').classList.add('sh');
+st.mCnt++;addP(10);chkA();svS();setTimeout(function(){drawMR(my,their);},400);}
+function gMS(t1,t2,sc){var s1=t1.split(''),s2=t2.split(''),r=[];
+if(s1[0]!==s2[0])r.push('一个外向一个内向，能形成很好的社交互补');
+if(s1[0]===s2[0])r.push('在能量获取方式上很相似，容易理解彼此的需求');
+if(s1[1]!==s2[1])r.push('一个注重细节一个着眼全局，看问题的角度互补');
+if(s1[2]!==s2[2])r.push('理性与感性的结合，能做出更全面的决策');
+if(s1[3]!==s2[3])r.push('一个有计划一个随性，能为生活带来平衡');
+return r.length?r.slice(0,2).join('；'):'你们有很多共同点，相处起来很自然舒适。';}
+function gMC(t1,t2,sc){var s1=t1.split(''),s2=t2.split(''),r=[];
+if(s1[0]!==s2[0])r.push('对社交的需求不同，需要互相理解和妥协');
+if(s1[1]!==s2[1])r.push('沟通方式可能存在差异，一个注重事实一个关注可能性');
+if(s1[2]!==s2[2])r.push('处理问题的方式不同，一个偏理性一个偏感性');
+if(s1[3]!==s2[3])r.push('生活节奏不同，一个喜欢计划一个喜欢随性');
+return r.length?r.slice(0,2).join('；'):'注意保持各自的空间和独立性。';}
+function gMT(t1,t2,sc){var tips={couple:'多沟通彼此的需求和感受，尊重差异，在共同点中寻找快乐。定期安排"约会时间"，创造属于两个人的仪式感。',friend:'珍惜彼此的友谊，在对方需要时给予支持。即使性格不同，也可以通过共同的兴趣和价值观建立深厚的友谊。',colleague:'在工作中发挥各自的优势，互相学习。明确分工，建立良好的沟通机制，尊重彼此的工作方式。'};return tips[sc]||tips.friend;}
+function drawMR(t1,t2){var cv=document.getElementById('mRadar');if(!cv)return;var ctx=cv.getContext('2d'),w=cv.width,h=cv.height,cx=w/2,cy=h/2,r=Math.min(cx,cy)-36;
+var dims=['E外向','S感觉','T思维','J判断'];
+var v1=dims.map(function(d){return t1.indexOf(d.charAt(0))>=0?80:30;});
+var v2=dims.map(function(d){return t2.indexOf(d.charAt(0))>=0?80:30;});
+var n=dims.length;ctx.clearRect(0,0,w,h);
+for(var ring=1;ring<=4;ring++){ctx.beginPath();for(var i=0;i<=n;i++){var a=Math.PI*2/n*i-Math.PI/2,rr=r*ring/4;ctx.lineTo(cx+rr*Math.cos(a),cy+rr*Math.sin(a));}ctx.closePath();ctx.strokeStyle='rgba(197,179,230,0.2)';ctx.stroke();}
+for(var i=0;i<n;i++){var a=Math.PI*2/n*i-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.strokeStyle='rgba(197,179,230,0.2)';ctx.stroke();}
+dRD(ctx,cx,cy,r,n,v1,'rgba(197,179,230,0.3)','#C5B3E6');dRD(ctx,cx,cy,r,n,v2,'rgba(240,168,104,0.3)','#F0A868');
+dims.forEach(function(d,i){var a=Math.PI*2/n*i-Math.PI/2,lx=cx+(r+22)*Math.cos(a),ly=cy+(r+22)*Math.sin(a);ctx.fillStyle='#2D3436';ctx.font='10px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d,lx,ly);});
+ctx.fillStyle='#C5B3E6';ctx.fillRect(10,h-20,10,10);ctx.fillStyle='#2D3436';ctx.font='10px system-ui';ctx.textAlign='left';ctx.fillText(t1,24,h-14);
+ctx.fillStyle='#F0A868';ctx.fillRect(70,h-20,10,10);ctx.fillStyle='#2D3436';ctx.fillText(t2,84,h-14);}
+function dRD(ctx,cx,cy,r,n,vals,fill,stroke){ctx.beginPath();vals.forEach(function(v,i){var a=Math.PI*2/n*i-Math.PI/2,rr=r*v/100;ctx.lineTo(cx+rr*Math.cos(a),cy+rr*Math.sin(a));});ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+// ===== TREEHOLE =====
+function rTH(){var all=THPOSTS.slice().concat(st.uTH.map(function(p){return{id:p.id,tp:st.mbti||'????',ct:p.ct,hg:p.hg||0,tm:'刚刚'};}));
+var el=document.getElementById('thPosts');el.innerHTML=all.map(function(p){
+var hg=st.hgTH.indexOf(p.id)>=0;
+return'<div class="thpo"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:16px">\u{2B50}</span><span style="font-size:12px;opacity:.7">一颗同类型的星星</span><span style="font-size:10px;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:10px">'+p.tp+'</span><span style="font-size:11px;opacity:.5;margin-left:auto">'+p.tm+'</span></div><div style="font-size:13px;line-height:1.7;opacity:.9;margin-bottom:12px">'+p.ct+'</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="hb2'+(hg?' hg':'')+'" onclick="sendHug('+p.id+',this,event)">\u{1F917} 拥抱 <span>'+(p.hg+(hg?1:0))+'</span></div></div></div>';}).join('');}
+function sendHug(id,el,ev){var i=st.hgTH.indexOf(id);if(i>=0){st.hgTH.splice(i,1);}else{st.hgTH.push(id);st.hCnt++;addP(2);chkA();}
+svS();rTH();
+if(ev){var em=document.createElement('div');em.className='ha2';em.textContent='\u{1F49C}';em.style.left=ev.clientX+'px';em.style.top=ev.clientY+'px';document.body.appendChild(em);setTimeout(function(){em.remove();},1500);}}
+function pubTH(){var txt=document.getElementById('thPT').value.trim();if(!txt){toast('请输入内容');return;}
+st.uTH.push({id:Date.now(),ct:txt,hg:0});addP(15);chkA();svS();document.getElementById('thPT').value='';toast('已发送到星空');rTH();}
+
+// ===== PROFILE =====
+function rProfile(){var tp=st.mbti,d=tp?MB[tp]:null,lv=gLv(st.pts);
+document.getElementById('pAv').textContent=tp||'?';document.getElementById('pAv').style.background=d?d.co:'var(--p)';
+document.getElementById('pNm').textContent=st.nick;
+document.getElementById('pMeta').textContent=(tp?tp+' / '+d.n:'尚未测试')+' / '+lv.n;
+document.getElementById('sDays').textContent=gDays();document.getElementById('sMatch').textContent=st.mCnt;document.getElementById('sPts').textContent=st.pts;
+// Wave chart
+var cv=document.getElementById('wCv');if(cv){cv.width=cv.offsetWidth*2;cv.height=160;var ctx=cv.getContext('2d'),w=cv.width,h=cv.height;
+ctx.clearRect(0,0,w,h);ctx.beginPath();ctx.moveTo(0,h/2);
+for(var x=0;x<w;x++){var y=h/2+Math.sin(x*0.02+Date.now()*0.001)*20+Math.sin(x*0.01)*10;ctx.lineTo(x,y);}
+ctx.strokeStyle='#C5B3E6';ctx.lineWidth=2;ctx.stroke();
+ctx.beginPath();ctx.moveTo(0,h/2);for(var x=0;x<w;x++){var y=h/2+Math.cos(x*0.015+Date.now()*0.0005)*15;ctx.lineTo(x,y);}
+ctx.strokeStyle='rgba(184,212,227,0.5)';ctx.lineWidth=1.5;ctx.stroke();}
+// Achievements
+var ah='';ACHS.forEach(function(a){var ul=st.achs.indexOf(a.id)>=0;ah+='<div class="ab2'+(ul?' ul':'')+'"><div class="bi2">'+a.ic+'</div><div class="bn2">'+a.n+'</div></div>';});
+document.getElementById('aGrid').innerHTML=ah;}
+
+// ===== INIT =====
+loadS();
+var hash=window.location.hash.slice(1);
+if(hash&&hash!=='home'){nav(hash);}else{rHome();}
+// Animate wave chart periodically
+setInterval(function(){if(cPage==='profile'){var cv=document.getElementById('wCv');if(cv){cv.width=cv.offsetWidth*2;cv.height=160;var ctx=cv.getContext('2d'),w=cv.width,h=cv.height;
+ctx.clearRect(0,0,w,h);ctx.beginPath();ctx.moveTo(0,h/2);
+for(var x=0;x<w;x++){var y=h/2+Math.sin(x*0.02+Date.now()*0.001)*20+Math.sin(x*0.01)*10;ctx.lineTo(x,y);}
+ctx.strokeStyle='#C5B3E6';ctx.lineWidth=2;ctx.stroke();
+ctx.beginPath();ctx.moveTo(0,h/2);for(var x=0;x<w;x++){var y=h/2+Math.cos(x*0.015+Date.now()*0.0005)*15;ctx.lineTo(x,y);}
+ctx.strokeStyle='rgba(184,212,227,0.5)';ctx.lineWidth=1.5;ctx.stroke();}}},3000);
+</script>
+</body>
+</html>
